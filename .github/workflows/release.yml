@@ -1,0 +1,56 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Create ZIP archive
+        run: |
+          zip -r Chaos_Server_Essentials.zip . -x "*.git*" "*.github*"
+      
+      - name: Get version from tag
+        id: get_version
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=latest" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Calculate SHA1
+        id: sha1
+        run: |
+          SHA1=$(sha1sum Chaos_Server_Essentials.zip | awk '{print $1}')
+          echo "SHA1=$SHA1" >> $GITHUB_OUTPUT
+          echo "SHA1 Hash: $SHA1"
+      
+      - name: Create Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Chaos_Server_Essentials.zip
+          body: |
+            Resource Pack Release ${{ steps.get_version.outputs.VERSION }}
+            
+            **SHA1:** `${{ steps.sha1.outputs.SHA1 }}`
+            
+            Download and use this SHA1 hash in your packmenu.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload artifact
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Chaos_Server_Essentials
+          path: Chaos_Server_Essentials.zip
