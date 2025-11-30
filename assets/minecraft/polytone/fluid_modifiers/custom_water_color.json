@@ -1,0 +1,8 @@
+{
+  "targets": [
+    "minecraft:water",
+    "minecraft:flowing_water"
+  ],
+  "colormap": "#91855c",
+  "fog_colormap": "#2e1b04"
+}

@@ -1,0 +1,7 @@
+{
+  "targets": [
+    "minecraft:overworld"
+  ],
+  "sky_colormap": "#e1e3dc",
+  "fog_colormap": "#ccbd9d"
+}
